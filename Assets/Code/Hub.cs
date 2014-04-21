@@ -16,5 +16,6 @@ public class Hub : MonoBehaviour {
 	void OnMouseDown() {
 		Screen.lockCursor = true;
 	}
+	public GameObject common_target_retical;
 
 }

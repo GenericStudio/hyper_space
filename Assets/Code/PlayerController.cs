@@ -50,10 +50,10 @@ public class PlayerController : MonoBehaviour {
  
 	
 
-		float dt = sensitivity * Time.deltaTime;
-		float dx = -Input.GetAxis("Mouse Y") * dt;
-		float dy = Input.GetAxis("Mouse X") * dt;
-		float dz = 0f;
+	//	float dt = sensitivity * Time.deltaTime;
+	//	float dx = -Input.GetAxis("Mouse Y") * dt;
+	//	float dy = Input.GetAxis("Mouse X") * dt;
+	//	float dz = 0f;
 
 
 
@@ -64,22 +64,22 @@ public class PlayerController : MonoBehaviour {
 
 
 		EnergyDisplay.text = "" + energy;
-		if(Input.GetAxis("Mouse ScrollWheel") > 0 && hub.cam.fieldOfView >25){
-			hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
-		}
-		if(Input.GetAxis("Mouse ScrollWheel") < 0 && hub.cam.fieldOfView <90){
-			hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
-		}
+	//	if(Input.GetAxis("Mouse ScrollWheel") > 0 && hub.cam.fieldOfView >25){
+		//	hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
+		//}
+	//	if(Input.GetAxis("Mouse ScrollWheel") < 0 && hub.cam.fieldOfView <90){
+	//		hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
+	//	}
 		if (Input.GetKey (KeyCode.LeftShift)) {
 			_moveSpeed = moveSpeed * 20;
 		} else {
 			_moveSpeed = moveSpeed*10;		
 		}
 
-		if (Input.GetKey (KeyCode.W)) {
+		if (Input.GetKey (KeyCode.W)|| Input.GetAxis("Vertical")>0.1f) {
 			desiredDirection += transform.forward;
 		}
-		if (Input.GetKey (KeyCode.S)) {
+		if (Input.GetKey (KeyCode.S)|| Input.GetAxis("Vertical")<-0.1f) {
 			desiredDirection -= transform.forward;
 		}
 		if (Input.GetKey (KeyCode.A)) {
@@ -89,10 +89,10 @@ public class PlayerController : MonoBehaviour {
 			desiredDirection += transform.right;
 		}
 		if (Input.GetKey (KeyCode.Q)) {
-			dz=1f;
+		//	dz=1f;
 		}
 		if (Input.GetKey (KeyCode.E)) {
-			dz=-1f;
+		//	dz=-1f;
 		}
 
 
@@ -130,11 +130,11 @@ public class PlayerController : MonoBehaviour {
 		}
 
 
-		Vector3 rotationVector = new Vector3(dx,dy,dz);
-		rotationVector*=Time.deltaTime*10;
-		transform.Rotate(dx, dy, dz);
+		//Vector3 rotationVector = new Vector3(dx,dy,dz);
+		//rotationVector*=Time.deltaTime*10;
+		//transform.Rotate(dx, dy, dz);
 
-
+		transform.rotation = Quaternion.Slerp(transform.rotation,hub.cam.transform.rotation,0.15f);
 
 
 		if((rigidbody.velocity + desiredDirection).magnitude < 5000||(rigidbody.velocity + desiredDirection).magnitude < rigidbody.velocity.magnitude )

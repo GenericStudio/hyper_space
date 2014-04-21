@@ -13,6 +13,7 @@ public class Projection_AllVisibleZones :MonoBehaviour
 		public List<List<Quaternion>> turnZones = new List<List<Quaternion>>();
 		public List<int> turnZonesFreshness;
 		public List<Quaternion> visableZones;
+	public GameObject target_retical;
 		
 		public void Start ()
 		{
@@ -20,6 +21,11 @@ public class Projection_AllVisibleZones :MonoBehaviour
 				latice = hub.latice;
 				turnZones = new List<List<Quaternion>> ();
 				zoneController = hub.zoneController;
+		if(target_retical!=null){
+			GameObject reticle = (GameObject)Instantiate(target_retical,transform.position,transform.rotation);
+			
+			reticle.transform.parent=this.transform;
+		}
 		}
 
 		public void Update ()
@@ -32,8 +38,8 @@ public class Projection_AllVisibleZones :MonoBehaviour
 						turnZonesFreshness.Add (0);
 						turnZones.Add (new List<Quaternion> ());
 					}
-					int zones = 13 + i*5;
-					if(i>5){
+					int zones = 18 + i*5;
+					if(i>4){
 						zones -= (latice.Actual_Iterations-i)*7;
 				}
 				if(turnZonesFreshness[i] < zoneController.MasterFreshness[i]){
@@ -75,6 +81,8 @@ public class Projection_AllVisibleZones :MonoBehaviour
 								GameObject Clone = new GameObject ();
 								Clone.AddComponent<MeshRenderer> ();
 								Clone.renderer.material = renderer.material;
+					Clone.renderer.material.color = Color.Lerp (renderer.material.color,new Color(0,0,0.01f*i),((float)i)/turnZones.Count*0.8f);
+
 								Clone.AddComponent<MeshFilter> ();
 								CloneProperties CloneObj =  Clone.AddComponent<CloneProperties>();
 								Clone.GetComponent<MeshFilter> ().sharedMesh =GetComponent<MeshFilter> ().mesh;
@@ -120,9 +128,8 @@ public class Projection_AllVisibleZones :MonoBehaviour
 					if(Clones[i][j]!=null){
 						try{
 							Vector3 Offset = new Vector3 (turnZones [i] [j].x, turnZones [i] [j].y, turnZones [i] [j].z);
-							Clones [i] [j].self.transform.position = latice.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + latice.LaticeBox.transform.InverseTransformPoint (transform.position));
+						Clones [i] [j].self.transform.position = latice.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + (latice.LaticeBox.transform.InverseTransformPoint (transform.position)));
 							Clones [i] [j].self.transform.rotation = Clones [i] [j].Original.transform.rotation;
-							Clones [i] [j].self.renderer.material.color = Color.Lerp (renderer.material.color,Color.black,Offset.magnitude/(latice.Actual_Iterations+1));
 						}catch(System.Exception e){
 							//print (i + "  " + Clones.Count + "  " + j + "  " + turnZones.Count );	
 						}

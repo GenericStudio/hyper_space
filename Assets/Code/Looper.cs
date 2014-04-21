@@ -27,7 +27,6 @@ public class Looper : MonoBehaviour {
 				LaticeWasActive=true;
 				LoopCounter = new Vector3();
 			}
-		
 		float right =center.transform.InverseTransformPoint(transform.position).x ;
 		float up =center.transform.InverseTransformPoint(transform.position).y;
 		float forward =center.transform.InverseTransformPoint(transform.position).z;
@@ -50,12 +49,11 @@ public class Looper : MonoBehaviour {
 				up++;      
 				LoopCounter.y--;
 				looping = true;
-				
 			}
 			if (forward >.5) {
 				forward--;      
-			LoopCounter.z++;
-			looping = true;
+				LoopCounter.z++;
+				looping = true;
 		}
 		else if (forward < -.5) {
 				forward++;      
@@ -64,8 +62,9 @@ public class Looper : MonoBehaviour {
 		}
 		if(looping){
 			Vector3 worldPos = center.transform.localToWorldMatrix.MultiplyPoint(new Vector3(right,up,forward));
-			transform.position =worldPos ;
-				looping = false;
+			transform.position =worldPos;
+			
+			looping = false;
 		}
 		}else{
 			if(LaticeWasActive){

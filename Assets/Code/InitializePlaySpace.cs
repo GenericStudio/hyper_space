@@ -56,15 +56,15 @@ public class InitializePlaySpace:MonoBehaviour {
 
 
 		if(OrbitingThis){
-			Vector2 circle = Random.insideUnitCircle.normalized * transform.localScale.magnitude*2f;
-			cube.transform.position = transform.position + new Vector3(circle.x,0,circle.y);
-			cube.transform.LookAt(transform.position);
-			cube.rigidbody.velocity = transform.right* hub.GlobalGravity  * (1/cube.transform.position.magnitude);
-
-		}else{
-			cube.transform.position = transform.position + Random.onUnitSphere * transform.localScale.magnitude;
+			Vector2 circle = Random.insideUnitCircle.normalized * hub.latice.ArenaSize;
+			cube.transform.position = transform.position + new Vector3(circle.y,circle.x,0);
 			cube.transform.LookAt(transform.position);
 		//	cube.rigidbody.velocity = transform.right* hub.GlobalGravity  * (1/cube.transform.position.magnitude);
+
+		}else{
+			cube.transform.position = transform.position + Random.onUnitSphere * hub.latice.ArenaSize/2;
+			cube.transform.LookAt(transform.position);
+		//	cube.rigidbody.velocity = Random.insideUnitSphere * Random.Range(0,100);
 
 
 

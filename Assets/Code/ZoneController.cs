@@ -29,11 +29,11 @@ public class ZoneController : MonoBehaviour {
 		}
 
 			for(int i = 1 ; i < MasterZoneList.Count;i++){
-				if( i < 3 || Time.frameCount%(i*5) == 0){
+				
 					MasterFreshness[i]=Time.frameCount;
 					MasterZoneList[i] = MasterZoneList[i].OrderBy(x=> Vector3.Angle(new Vector3(x.x,x.y,x.z), hub.LaticeBox.transform.InverseTransformDirection(transform.forward))).ToList();
 				}
-			}
+			
 
 	}
 	public void Update(){

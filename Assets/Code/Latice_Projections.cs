@@ -30,7 +30,7 @@ public class Latice_Projections :MonoBehaviour
 								turnZones.Add (new List<Quaternion> ());
 						}
 			
-				int zones =40;
+				int zones =9;
 
 					
 				 
@@ -71,7 +71,7 @@ public class Latice_Projections :MonoBehaviour
 
 			for (int i = 0; i < laticeIterations; i++) {
 						for (int j = 0; j < Clones[i].Count; j++) {
-					if(Time.frameCount%(i*2)==0 || j<6){
+					if(Time.frameCount%(i)==0 || j<6){
 								Vector3 Offset = new Vector3 (turnZones [i] [j].x, turnZones [i] [j].y, turnZones [i] [j].z);
 								Clones [i] [j].self.transform.position = latice.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + latice.LaticeBox.transform.InverseTransformPoint (transform.position));
 								Clones [i] [j].self.transform.rotation = Clones [i] [j].Original.transform.rotation;

@@ -51,7 +51,7 @@ public class GunScript : MonoBehaviour
 														}
 														cube.transform.localScale = new Vector3 (bulletSize, bulletSize, bulletSize);
 														cube.name = "bullet";
-														cube.AddComponent<BulletProjections>();
+						//	cube.AddComponent<SingleProjection>();
 														cube.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread;
 														Physics.IgnoreCollision (cube.collider, gameObject.collider);
 												}
@@ -59,6 +59,33 @@ public class GunScript : MonoBehaviour
 										audio.Play ();
 								}
 						}
+
+			}
+		if (Input.GetMouseButton (1)) {
+			if (TimeAtLastFire < (Time.timeSinceLevelLoad - FireDelay) && player.energy > RapidFireCost) {
+				player.energy -= RapidFireCost;
+				TimeAtLastFire = Time.timeSinceLevelLoad;
+				for (int i = 0; i < transform.childCount; i++) {
+					if (transform.GetChild (i).name == "MuzzleSmall"&&transform.GetChild (i).gameObject.activeSelf) {
+						GameObject cube = Instantiate (Bullet, transform.GetChild (i).transform.position, Quaternion.identity) as GameObject;
+						if (hub.latice.Active) {
+							hub.latice.AddObjectToLatice (cube);
+						}
+						BulletScript bullet_props = GetComponent<BulletScript>();
+						
+						cube.transform.localScale = new Vector3 (bulletSize*4, bulletSize*4, bulletSize*4);
+						cube.name = "bullet";
+					//	cube.AddComponent<SingleProjection>();
+						cube.renderer.material.color = Color.red;
+					//	cube.AddComponent <Attractor>();
+						
+						cube.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread*2;
+						cube.rigidbody.drag=2;
+						Physics.IgnoreCollision (cube.collider, gameObject.collider);
+					}
+				}
+				audio.Play ();
+			}
 				}
 	//	if(weaponSystems[1]){
 	//		if (Input.GetMouseButton (0)) {

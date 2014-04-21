@@ -144,14 +144,18 @@ public void LaunchLatice(){
 
 
 	void Update(){
+		hub.LaticeBox.transform.position=transform.position+ ArenaSize*.45f* hub.cam.transform.forward;
+
 		smooth_fps[Time.frameCount %smooth_fps.Count] = Time.deltaTime;
 		if(Time.frameCount%10 == 0){
 			var fps = (int)smooth_fps.Count/smooth_fps.Sum();
-			print (fps);
+			//print (fps);
 			if(Actual_Iterations > _max_Iterations/2 && fps < 17) Actual_Iterations--;
 			else if(Actual_Iterations < _max_Iterations && fps>30) Actual_Iterations++;
 		}
-
+		for (int i = LaticeObjectManager.Count-1; i > 0; i--){
+			if(LaticeObjectManager[i]==null || LaticeObjectManager[i].rigidbody==null) LaticeObjectManager.RemoveAt(i);
+		}
 
 		if(!Active && Input.GetKey(KeyCode.LeftControl)){
 			LaticeBox.SetActive(true);
@@ -171,12 +175,9 @@ public void LaunchLatice(){
 				Active = false;
 			}
 		}
-		if(Active && LaticeBox.GetComponent<Latice_Projections>().enabled==true&& hub.player.GetComponent<Looper>().LoopCounter.magnitude>1){
 
-			LaticeBox.GetComponent<Latice_Projections>().enabled=false;
-			LaticeBox.AddComponent<Looper>();
-			LaticeBox.AddComponent<BulletProjections>();
-		}
+		
+
 
 	}
 
