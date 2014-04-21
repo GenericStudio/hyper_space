@@ -7,8 +7,6 @@ public class BulletProjections :MonoBehaviour
 {
 	private Hub hub;
 	public CloneProperties Clone_Props;
-	public LaticeController latice;
-	public ZoneController zoneController;
 	public Vector3 startZone;
 	public int Iterations;
 	public int maxZones = 1;
@@ -16,10 +14,10 @@ public class BulletProjections :MonoBehaviour
 	
 	void Start(){
 		hub = GameObject.Find("hub").GetComponent<Hub>();
-		latice = hub.latice;
+
 		Looper =  GetComponent<Looper>();
 		
-		zoneController = hub.player.GetComponent<ZoneController>();
+
 		startZone = hub.player.GetComponent<Looper>().LoopCounter;
 		GameObject Projection = new GameObject ();
 		Clone_Props = Projection.AddComponent<CloneProperties>();
@@ -32,22 +30,21 @@ public class BulletProjections :MonoBehaviour
 		Projection.name = this.gameObject.name + "_Projection";
 		Clone_Props.Original = transform;
 		Clone_Props.self = Projection;
-		
-		
+		renderer.enabled=false; 
+		Vector3 loop = Looper.LoopCounter;
+		if(Clone_Props!=null){
+			Vector3 Offset = loop  - (hub.player.GetComponent<Looper>().LoopCounter-startZone);
+			Clone_Props.self.transform.position = hub.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + hub.LaticeBox.transform.InverseTransformPoint (transform.position));
+		}
 	}
 	public void Update ()
 	{
 		
 		
 		Vector3 loop = Looper.LoopCounter;
-		if(renderer.enabled){
-			if(Mathf.Abs(loop.x)>=0.5f||Mathf.Abs(loop.y)>=0.5f||Mathf.Abs(loop.z)>=0.5f){
-				renderer.enabled=false;
-			}
-		}
 		if(Clone_Props!=null){
 			Vector3 Offset = loop  - (hub.player.GetComponent<Looper>().LoopCounter-startZone);
-			Clone_Props.self.transform.position = latice.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + latice.LaticeBox.transform.InverseTransformPoint (transform.position));
+			Clone_Props.self.transform.position = hub.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + hub.LaticeBox.transform.InverseTransformPoint (transform.position));
 		}
 	}
 	

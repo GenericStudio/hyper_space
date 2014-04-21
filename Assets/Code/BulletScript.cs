@@ -7,14 +7,12 @@ public class BulletScript : MonoBehaviour {
 	public int damage = 1;
 	void Start () {
 		hub = GameObject.Find("hub").GetComponent<Hub>();
-		Destroy (gameObject, 10f);
+		Destroy (gameObject, 15f);
 	}
 	
-	void Update(){
 
-	}
-	void OnCollisionEnter(){
-
+	void OnCollisionEnter(Collision c){
+		if(!(c.contacts[0].otherCollider.gameObject.GetComponent<BulletScript>()))
 		Destroy (gameObject, 1f);
 	}
 	void OnDestroy(){
