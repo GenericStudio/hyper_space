@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class EnemyHealth : MonoBehaviour {
+public class AsteroidHealth : MonoBehaviour {
 
 
 	public int health = 1;
@@ -17,49 +17,44 @@ public class EnemyHealth : MonoBehaviour {
 	}
 
 	public void OnCollisionEnter(Collision collision) {
-		if(collision.relativeVelocity.magnitude> 25 && GetComponent<AudioSource>()){
-		audio.pitch = 1-(1/transform.localScale.magnitude);
+		if(collision.relativeVelocity.magnitude> 50 && GetComponent<AudioSource>()){
+		audio.pitch = (100/transform.localScale.magnitude)+Random.Range(-.05f,0.05f);
 		audio.Play();
 		}
-		if(collision.gameObject.GetComponent<BulletScript>()){
-
-			health-= collision.gameObject.GetComponent<BulletScript>().damage;
-			Instantiate(impact,collision.contacts[0].point,transform.rotation);
-
-		
-			if(GetComponent<ParticleSystem>())
-				GetComponentInChildren<ParticleSystem>().Play();
-
-		}
+	}
+	public void HIT(int damage,GameObject collider){
+			health-= damage;
 		if(health<0){ 
-			//List<List<CloneProperties>> clones = GetComponent<Projection_AllVisibleZones>().Clones;
+
+			List<List<CloneProperties>> clones = GetComponent<Projection_AllVisibleZones>().Clones;
 			Vector3 pos =transform.position;
-			//float angle = Vector3.Angle(hub.player.transform.forward,(hub.player.transform.position-transform.position).normalized);
-			//foreach(List<CloneProperties> clone in clones){
-			//	foreach(CloneProperties cl in clone){
-				//	float anfle = Vector3.Angle(hub.player.transform.forward,(hub.player.transform.position-cl.self.transform.position).normalized);
-			//	if(anfle<angle){
-				//	anfle = angle;
-				//		pos = cl.self.transform.position;
-			//	}
-			//	}
-			//}//
- 			GameObject explosion = Instantiate(destruction,pos,transform.rotation) as GameObject;
+			float distance = Vector3.Distance(collider.transform.position,transform.position);
+			foreach(List<CloneProperties> clone in clones){
+				foreach(CloneProperties cl in clone){
+					float anfle = Vector3.Distance(collider.transform.position,cl.transform.position);
+					if(anfle<distance){
+						distance = anfle;
+					pos = cl.self.transform.position;
+				}
+				}
+			}
+			GameObject explosion = Instantiate(destruction,pos,transform.rotation) as GameObject;
 			explosion.particleSystem.startSize=transform.lossyScale.magnitude;
 			explosion.transform.GetChild(0).particleSystem.startSize=transform.lossyScale.magnitude;
-
-			if(rigidbody.mass>100){
-			for(int i = 0 ; i <3; i++){
-				GameObject ass1 = Instantiate(hub.asteroid, transform.position+Random.insideUnitSphere*transform.localScale.x*0.5f ,transform.rotation) as GameObject;
-				ass1.GetComponent<EnemyHealth>().health=(int)rigidbody.mass/10;
-				
-				ass1.transform.localScale = new Vector3(transform.localScale.x*.3f,transform.localScale.x*.3f,transform.localScale.x*.3f);
-				ass1.rigidbody.AddForce(Random.onUnitSphere * (int)rigidbody.mass*100);
-			}
+			int Value = (int)(rigidbody.mass/2f);
+			if(rigidbody.mass>20){
+				for(int i = 0 ; i <2; i++){
+					GameObject ass1 = Instantiate(hub.asteroid, transform.position+Random.insideUnitSphere*transform.localScale.x*0.5f ,transform.rotation) as GameObject;
+					ass1.GetComponent<AsteroidHealth>().health=Value/2;
+					ass1.rigidbody.mass = Value;
+					ass1.transform.localScale = new Vector3(transform.localScale.x*.5f,transform.localScale.x*.5f,transform.localScale.x*.5f);
+					ass1.rigidbody.velocity = rigidbody.velocity;
+					ass1.rigidbody.inertiaTensorRotation=rigidbody.inertiaTensorRotation;
+				}
 			}
 			GameObject.Destroy(this.gameObject);
-
-
+			
+			
 		}
 	}
 }

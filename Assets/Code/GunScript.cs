@@ -12,11 +12,11 @@ public class GunScript : MonoBehaviour
 		public float bulletSize = 2;
 		public int bulletSpread = 5;
 		public GameObject Bullet;
+	public GameObject Missle;
+
 		private float TimeAtLastFire = 0f;
 		private PlayerController player;
 		public int RapidFireCost = 5;
-		public int ChargeCharge = 0;
-	private GameObject ChargeShot;
 	private bool[] weaponSystems = new bool[2]{true,true};
 
 		// Update is called once per frame
@@ -36,97 +36,57 @@ public class GunScript : MonoBehaviour
 				if (Input.GetKeyDown (KeyCode.Keypad0)) {
 						weaponSystems [0] = !weaponSystems [0];
 				}
-
+		if (TimeAtLastFire < (Time.timeSinceLevelLoad - FireDelay) && player.energy > RapidFireCost) {
 
 				if (weaponSystems [0]) {
-						if (Input.GetMouseButton (0)) {
-								if (TimeAtLastFire < (Time.timeSinceLevelLoad - FireDelay) && player.energy > RapidFireCost) {
-										player.energy -= RapidFireCost;
-										TimeAtLastFire = Time.timeSinceLevelLoad;
-										for (int i = 0; i < transform.childCount; i++) {
-						if (transform.GetChild (i).name == "MuzzleSmall"&&transform.GetChild (i).gameObject.activeSelf) {
-														GameObject cube = Instantiate (Bullet, transform.GetChild (i).transform.position, Quaternion.identity) as GameObject;
-														if (hub.latice.Active) {
-																hub.latice.AddObjectToLatice (cube);
-														}
-														cube.transform.localScale = new Vector3 (bulletSize, bulletSize, bulletSize);
-														cube.name = "bullet";
-						//	cube.AddComponent<SingleProjection>();
-														cube.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread;
-														Physics.IgnoreCollision (cube.collider, gameObject.collider);
-												}
-										}
-										audio.Play ();
-								}
-						}
-
-			}
-		if (Input.GetMouseButton (1)) {
-			if (TimeAtLastFire < (Time.timeSinceLevelLoad - FireDelay) && player.energy > RapidFireCost) {
-				player.energy -= RapidFireCost;
-				TimeAtLastFire = Time.timeSinceLevelLoad;
-				for (int i = 0; i < transform.childCount; i++) {
+				if (Input.GetAxis("Fire1")<-0.25f) {
+					player.energy -= RapidFireCost;
+					TimeAtLastFire = Time.timeSinceLevelLoad;
+					for (int i = 0; i < transform.childCount; i++) {
 					if (transform.GetChild (i).name == "MuzzleSmall"&&transform.GetChild (i).gameObject.activeSelf) {
-						GameObject cube = Instantiate (Bullet, transform.GetChild (i).transform.position, Quaternion.identity) as GameObject;
+						GameObject cube = Instantiate (Bullet, transform.GetChild (i).transform.position, transform.rotation) as GameObject;
 						if (hub.latice.Active) {
-							hub.latice.AddObjectToLatice (cube);
+							//	hub.latice.AddObjectToLatice (cube);
 						}
-						BulletScript bullet_props = GetComponent<BulletScript>();
-						
-						cube.transform.localScale = new Vector3 (bulletSize*4, bulletSize*4, bulletSize*4);
+						cube.transform.localScale = new Vector3 (bulletSize/10, bulletSize/10, bulletSize*10);
 						cube.name = "bullet";
-					//	cube.AddComponent<SingleProjection>();
-						cube.renderer.material.color = Color.red;
-					//	cube.AddComponent <Attractor>();
-						
-						cube.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread*2;
-						cube.rigidbody.drag=2;
+						cube.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread;
 						Physics.IgnoreCollision (cube.collider, gameObject.collider);
 					}
 				}
-				audio.Play ();
+				
+			}
+
+			}
+
+			}
+		if (TimeAtLastFire < (Time.timeSinceLevelLoad - FireDelay*4) && player.energy > RapidFireCost) {
+
+			if (Input.GetAxis("Fire1")>0.25f) {
+
+
+
+				player.energy -= RapidFireCost;
+				TimeAtLastFire = Time.timeSinceLevelLoad;
+				for (int i = 0; i < transform.childCount; i++) {
+					if (transform.GetChild (i).name == "MuzzleLarge"&&transform.GetChild (i).gameObject.activeSelf) {
+						GameObject cube = Instantiate (Missle, transform.GetChild (i).transform.position, Quaternion.identity) as GameObject;
+
+						BulletScript bullet_props = GetComponent<BulletScript>();
+						cube.transform.localScale = new Vector3 (bulletSize*10, bulletSize*10, bulletSize*10);
+						cube.name = "GravityCenter";
+						cube.renderer.material.color = Color.red;
+						//cube.AddComponent <Attractor>();
+						
+						cube.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread*2;
+						cube.rigidbody.drag=0.5f;
+						cube.rigidbody.mass*=10;
+						Physics.IgnoreCollision (cube.collider, gameObject.collider);
+					}
+
 			}
 				}
-	//	if(weaponSystems[1]){
-	//		if (Input.GetMouseButton (0)) {
-	//			if(ChargeShot == null){
-	//				for (int i = 0; i < transform.childCount; i++) {
-	//					if (transform.GetChild (i).name == "MuzzleCharge") {
-	//						ChargeShot=Instantiate (Bullet, transform.GetChild (i).transform.position, transform.GetChild (i).transform.rotation) as GameObject;
-	//						ChargeShot.transform.parent = transform.GetChild(i).transform;
-	//						ChargeShot.collider.enabled=false;
-	//
-	//
-	//			}
-	//				}
-	//			}
-	//			if(ChargeCharge<100 && player.energy>1){
-	//				ChargeCharge++;
-	//				player.energy--;
-	//				ChargeShot.transform.localScale = new Vector3(ChargeCharge/15,ChargeCharge/15,ChargeCharge/15);
-	//				ChargeShot.rigidbody.mass=ChargeCharge;
-	//				ChargeShot.transform.position = ChargeShot.transform.parent.position+ (ChargeShot.transform.parent.forward * ChargeCharge)/5;
-	//
-	//			}else{
-	//				ChargeShot.transform.position = ChargeShot.transform.parent.position+ (ChargeShot.transform.parent.forward * ChargeCharge)/5;
-	//			}
-	//
-	//			
-	//		}else if(ChargeShot !=null && ChargeCharge>0 && !Input.GetMouseButton(0)){
-	//			if (hub.latice.Active) {
-	//				hub.latice.AddObjectToLatice (ChargeShot);
-	//			}
-	//			//ChargeShot.AddComponent<BulletProjections>();
-	//			ChargeShot.rigidbody.velocity = rigidbody.velocity + transform.forward * bulletSpeed + Random.onUnitSphere * bulletSpread;
-	//			ChargeShot.collider.enabled=true;
-	//		
-	//			Physics.IgnoreCollision (ChargeShot.collider, gameObject.collider);
-	//			ChargeShot.GetComponent<BulletScript>().damage=ChargeCharge/5;
-	//			ChargeCharge=0;
-	//			ChargeShot.transform.parent=null;
-	//			ChargeShot = null;
-	//
-	//		}
-	//	}
-	}
+		}
+		}
+
 }

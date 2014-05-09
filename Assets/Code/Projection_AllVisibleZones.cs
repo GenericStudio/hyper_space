@@ -127,8 +127,8 @@ public class Projection_AllVisibleZones :MonoBehaviour
 				for (int j = 0; j < Clones[i].Count; j++) {
 					if(Clones[i][j]!=null){
 						try{
-							Vector3 Offset = new Vector3 (turnZones [i] [j].x, turnZones [i] [j].y, turnZones [i] [j].z);
-						Clones [i] [j].self.transform.position = latice.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Offset + (latice.LaticeBox.transform.InverseTransformPoint (transform.position)));
+							Clones[i][j].offset = new Vector3 (turnZones [i] [j].x, turnZones [i] [j].y, turnZones [i] [j].z);
+						Clones [i] [j].self.transform.position = latice.LaticeBox.transform.localToWorldMatrix.MultiplyPoint (Clones[i][j].offset + (latice.LaticeBox.transform.InverseTransformPoint (transform.position)));
 							Clones [i] [j].self.transform.rotation = Clones [i] [j].Original.transform.rotation;
 						}catch(System.Exception e){
 							//print (i + "  " + Clones.Count + "  " + j + "  " + turnZones.Count );	

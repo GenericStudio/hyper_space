@@ -1,4 +1,4 @@
-﻿ using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -17,10 +17,10 @@ public class LaticeController : MonoBehaviour {
 
 	public bool Active = false;
 	public GameObject LaticeBox;
-	public List<GameObject> LaticeObjectManager;
-	public List<GameObject> OutsideLaticeObjectManager;
+	public HashSet<GameObject> LaticeObjectManager;
+	public HashSet<GameObject> OutsideLaticeObjectManager;
 	Vector3 FrameVelocity = Vector3.zero;
-	private List<float> smooth_fps = new List<float>(){0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f,0f};
+	private List<float> smooth_fps = new List<float>(){25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f,25f};
 
 
 
@@ -28,7 +28,8 @@ public class LaticeController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-
+		//.position=transform.position+ ArenaSize*.4f* hub.cam.transform.forward;
+		
 		hub = GameObject.Find("hub").GetComponent<Hub>();
 	
 		player = hub.player;
@@ -78,8 +79,8 @@ public void LaunchLatice(){
 		Active=true;
 		player.GetComponent<Looper>().LoopCounter=new Vector3();
 		LaticeBox.renderer.material.SetFloat ("_Cutoff", 1);
-		LaticeObjectManager = new List<GameObject>();
-		OutsideLaticeObjectManager = new List<GameObject>();
+		LaticeObjectManager = new HashSet<GameObject>();
+		OutsideLaticeObjectManager = new HashSet<GameObject>();
 	
 	
 		LaticeBox.transform.position=player.transform.position;
@@ -120,18 +121,18 @@ public void LaunchLatice(){
 	public void DestroyLatice(){
 		Active = false;
 		for(int i = LaticeObjectManager.Count-1 ; i >-1 ;i--){
-			if(LaticeObjectManager[i] != null){
-				if(LaticeObjectManager[i].rigidbody!=null) 
-					LaticeObjectManager[i].rigidbody.velocity+=FrameVelocity;
-				LaticeObjectManager.RemoveAt(i);
+			if(LaticeObjectManager.ElementAt(i) != null){
+				if(LaticeObjectManager.ElementAt(i).rigidbody!=null) 
+					LaticeObjectManager.ElementAt(i).rigidbody.velocity+=FrameVelocity;
+				LaticeObjectManager.Remove(LaticeObjectManager.ElementAt(i));
 			}
 		}
 
 		FrameVelocity=Vector3.zero;
 		for(int i = OutsideLaticeObjectManager.Count-1 ; i >-1 ;i--){
-			if(OutsideLaticeObjectManager[i] != null){
-				OutsideLaticeObjectManager[i].SetActive(true);
-				OutsideLaticeObjectManager.RemoveAt(i);
+			if(LaticeObjectManager.ElementAt(i) != null){
+				LaticeObjectManager.ElementAt(i).SetActive(true);
+				OutsideLaticeObjectManager.Remove(LaticeObjectManager.ElementAt(i));
 			}
 		}
 
@@ -143,21 +144,14 @@ public void LaunchLatice(){
 
 
 
-	void Update(){
-		hub.LaticeBox.transform.position=transform.position+ ArenaSize*.45f* hub.cam.transform.forward;
+	void EarlyUpdate(){
 
-		smooth_fps[Time.frameCount %smooth_fps.Count] = Time.deltaTime;
-		if(Time.frameCount%10 == 0){
-			var fps = (int)smooth_fps.Count/smooth_fps.Sum();
-			//print (fps);
-			if(Actual_Iterations > _max_Iterations/2 && fps < 17) Actual_Iterations--;
-			else if(Actual_Iterations < _max_Iterations && fps>30) Actual_Iterations++;
-		}
+
 		for (int i = LaticeObjectManager.Count-1; i > 0; i--){
-			if(LaticeObjectManager[i]==null || LaticeObjectManager[i].rigidbody==null) LaticeObjectManager.RemoveAt(i);
+			if(LaticeObjectManager.ElementAt(i)==null || LaticeObjectManager.ElementAt(i).rigidbody==null) LaticeObjectManager.Remove(LaticeObjectManager.ElementAt(i));
 		}
 
-		if(!Active && Input.GetKey(KeyCode.LeftControl)){
+		/*if(!Active && Input.GetKey(KeyCode.LeftControl)){
 			LaticeBox.SetActive(true);
 			LaticeBox.transform.position   = player.transform.position;
 			LaticeBox.transform.rotation   = player.transform.rotation;
@@ -175,10 +169,19 @@ public void LaunchLatice(){
 				Active = false;
 			}
 		}
-
 		
+*/
 
-
+	}
+	public void Update(){
+		hub.LaticeBox.transform.position=transform.position+ ArenaSize*.4f* hub.cam.transform.forward;
+		smooth_fps[Time.frameCount %smooth_fps.Count] = Time.deltaTime;
+		if(Time.frameCount%10 == 0){
+			var fps = (int)smooth_fps.Count/smooth_fps.Sum();
+			//print (fps);
+			if(Actual_Iterations > _max_Iterations/2 && fps < 30) Actual_Iterations--;
+			else if(Actual_Iterations < _max_Iterations && fps>60) Actual_Iterations++;
+		}
 	}
 
 }

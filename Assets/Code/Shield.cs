@@ -23,7 +23,7 @@ public class Shield: MonoBehaviour
 			shieldUp = false;
 
 
-		if (Input.GetKey(KeyCode.Space)) {
+		if (Input.GetAxis("Brake")>0.1) {
 			if(player.energy>0)
 				player.energy-=ShieldEnergyCost;
 			if(player.energy>ShieldEnergyCost){

@@ -22,15 +22,14 @@ public class PlayerController : MonoBehaviour {
 
 
 	float sensitivity = 80f;
-	public int antiGravityRadius = 100;
-	public int antiGravityStrength = 100;
 	public float moveSpeed;
-	private float _moveSpeed = 50f;
+	private float EngineForce = 50f;
 	public int energy = 0;
 	public int maxEnergy = 100;
 	public int energyRechargeRate = 1;
 	private GUIText EnergyDisplay;
 	private Vector3 desiredDirection;
+	public ParticleSystem EngineEffect;
 
 
 	private Hub hub;
@@ -47,57 +46,46 @@ public class PlayerController : MonoBehaviour {
 		public Vector3 oldPos;
 	}
 	void Update(){
- 
-	
-
-	//	float dt = sensitivity * Time.deltaTime;
-	//	float dx = -Input.GetAxis("Mouse Y") * dt;
-	//	float dy = Input.GetAxis("Mouse X") * dt;
-	//	float dz = 0f;
-
-
-
-	
 		desiredDirection = Vector3.zero;
 		if(energy<maxEnergy)
 			energy+=energyRechargeRate;
-
-
-		EnergyDisplay.text = "" + energy;
-	//	if(Input.GetAxis("Mouse ScrollWheel") > 0 && hub.cam.fieldOfView >25){
-		//	hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
-		//}
-	//	if(Input.GetAxis("Mouse ScrollWheel") < 0 && hub.cam.fieldOfView <90){
-	//		hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
-	//	}
-		if (Input.GetKey (KeyCode.LeftShift)) {
-			_moveSpeed = moveSpeed * 20;
-		} else {
-			_moveSpeed = moveSpeed*10;		
+		EngineForce=moveSpeed;
+		if(Input.GetKey(KeyCode.LeftShift))
+			EngineForce*=2;
+		EnergyDisplay.text = "" + hub.latice.LaticeObjectManager.Count();
+		if(Input.GetAxis("Mouse ScrollWheel") > 0 && hub.cam.fieldOfView > 25){
+			hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
 		}
-
-		if (Input.GetKey (KeyCode.W)|| Input.GetAxis("Vertical")>0.1f) {
+		if(Input.GetAxis("Mouse ScrollWheel") < 0 && hub.cam.fieldOfView < 90){
+			hub.cam.fieldOfView -= Input.GetAxis("Mouse ScrollWheel") *10;
+		}
+		if(Input.GetAxis("Zoom")< -0.25f  ){
+			if(hub.cam.fieldOfView >45)
+				hub.cam.fieldOfView *=.9f;
+		}
+		else if(Input.GetAxis("Zoom") > 0.25f  ){
+			if(hub.cam.fieldOfView <90){
+			hub.cam.fieldOfView *=1.1f;
+			}
+		}
+		else if( Mathf.Abs (hub.cam.fieldOfView-60)>5){
+			hub.cam.fieldOfView = (hub.cam.fieldOfView + 60) /2;
+		}
+		if ( Input.GetAxis("Vertical")<-0.1f) {
 			desiredDirection += transform.forward;
 		}
-		if (Input.GetKey (KeyCode.S)|| Input.GetAxis("Vertical")<-0.1f) {
+		if ( Input.GetAxis("Vertical")>0.1f) {
 			desiredDirection -= transform.forward;
 		}
-		if (Input.GetKey (KeyCode.A)) {
-			desiredDirection -= transform.right;
+		if ( Input.GetAxis("Horizontal")<-0.1f) {
+			desiredDirection -= 0.5f*transform.right;
 		}
-		if (Input.GetKey (KeyCode.D)) {
-			desiredDirection += transform.right;
+		if (Input.GetAxis("Horizontal")>0.1f) {
+			desiredDirection += 0.5f*transform.right;
 		}
-		if (Input.GetKey (KeyCode.Q)) {
-		//	dz=1f;
-		}
-		if (Input.GetKey (KeyCode.E)) {
-		//	dz=-1f;
-		}
-
-
+		EngineEffect.startSpeed=Mathf.Max(2,desiredDirection.magnitude*10);
+		/*
 		if (Input.GetKey (KeyCode.Minus) && hub.LaticeBox.transform.lossyScale.x<20000) {
-
 			List<placement> posMap = new List<placement>();
 			foreach( GameObject obj in hub.latice.LaticeObjectManager){
 				if(obj!=null)
@@ -108,7 +96,6 @@ public class PlayerController : MonoBehaviour {
 				if(obj.dis_obj != null)
 					obj.dis_obj.transform.position = hub.LaticeBox.transform.localToWorldMatrix.MultiplyPoint(obj.oldPos);
 			}
-
 		}
 		if (Input.GetKey (KeyCode.Equals)&& hub.LaticeBox.transform.lossyScale.x>1000) {
 			List<placement> posMap = new List<placement>();
@@ -122,30 +109,21 @@ public class PlayerController : MonoBehaviour {
 					obj.dis_obj.transform.position = hub.LaticeBox.transform.localToWorldMatrix.MultiplyPoint(obj.oldPos);
 			}
 		}
+		*/
 		if (Input.GetKey (KeyCode.P) && hub.LaticeBox.transform.lossyScale.x<10000) {
 			hub.LaticeBox.transform.localScale*=1.01f;
 		}
 		if (Input.GetKey (KeyCode.O)&& hub.LaticeBox.transform.lossyScale.x>100) {
 			hub.LaticeBox.transform.localScale*=0.99f;
 		}
-
-
-		//Vector3 rotationVector = new Vector3(dx,dy,dz);
-		//rotationVector*=Time.deltaTime*10;
-		//transform.Rotate(dx, dy, dz);
-
-		transform.rotation = Quaternion.Slerp(transform.rotation,hub.cam.transform.rotation,0.15f);
-
-
-		if((rigidbody.velocity + desiredDirection).magnitude < 5000||(rigidbody.velocity + desiredDirection).magnitude < rigidbody.velocity.magnitude )
-			rigidbody.AddForce(desiredDirection*_moveSpeed*1000*Time.deltaTime);
-	
-
+		transform.rotation = Quaternion.Slerp(transform.rotation,hub.cam.transform.rotation,0.1f);
+		if(Input.GetKey (KeyCode.LeftShift)||((rigidbody.velocity + desiredDirection).magnitude < moveSpeed*5||(rigidbody.velocity + desiredDirection).magnitude < rigidbody.velocity.magnitude ))
+			rigidbody.AddForce(desiredDirection*EngineForce*2000*Time.deltaTime);
 	}
 
 
 		public void OnCollisionEnter(Collision col) {
-		rigidbody.velocity = -rigidbody.velocity/2;
+		//rigidbody.velocity = -rigidbody.velocity/2;
 		if(!GetComponentInChildren<Shield>().shieldUp){
 			if(col.gameObject.GetComponent<Harmfull>()){
 		

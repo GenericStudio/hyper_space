@@ -7,6 +7,7 @@ public class Hub : MonoBehaviour {
 	public GameObject LaticeBox;
 	public Camera cam;
 	public GameObject player;
+	public GameObject asteroid;
 	public ZoneController zoneController;
 	public LaticeController latice;
 	public int GlobalGravity = 9;
@@ -16,6 +17,5 @@ public class Hub : MonoBehaviour {
 	void OnMouseDown() {
 		Screen.lockCursor = true;
 	}
-	public GameObject common_target_retical;
 
 }

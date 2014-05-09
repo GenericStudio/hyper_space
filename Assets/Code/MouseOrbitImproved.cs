@@ -24,38 +24,39 @@ public class MouseOrbitImproved : MonoBehaviour {
 		x = angles.y;
 		y = angles.x;
 		
-		// Make the rigid body not change rotation
-		if (rigidbody)
-			rigidbody.freezeRotation = true;
+		// Make the rigid body not change 
 	}
 	
 	void LateUpdate () {
 		if (target) {
-		float 	x_raw = Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-		
-			y -= Input.GetAxis("Mouse Y") * ySpeed * distance*0.02f;
-			//x+=x_raw;
+				float dt = 10 * Time.deltaTime;
+				//float dx = -Input.GetAxis("Mouse Y") * dt;
+				//float dy = Input.GetAxis("Mouse X") * dt;
 
-//			print (y);
-			y = ClampAngle(y, yMinLimit, yMaxLimit);
-			if(y>270 || y<90) x+=x_raw;
-			else x-=x_raw;
-			Quaternion rotation =  Quaternion.Euler(y,x,0);
+			float dx = Input.GetAxis("Pitch");
+			float dy = Input.GetAxis("Yaw");
+			float dz = Input.GetAxis("Roll");
+
+
+
+			                                                                   
+	
+			Vector3 rotationVector = new Vector3(dx,dy,dz);
+			rotationVector*=Time.deltaTime;
+
+			transform.Rotate(dx, dy, dz);
+			Quaternion rotation =  transform.rotation;;
 			
-			distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel")*5, distanceMin, distanceMax);
+			//distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel")*5, distanceMin, distanceMax);
 			
-			RaycastHit hit;
-			if (Physics.Linecast (target.position, transform.position, out hit)) {
-				distance -=  hit.distance;
-			}
+			//RaycastHit hit;
+			//if (Physics.Linecast (target.position, transform.position, out hit)) {
+			//	distance -=  hit.distance;
+			//}
 			Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
 			Vector3 position = rotation * negDistance + target.position;
-			
-			transform.rotation = Quaternion.Lerp(transform.rotation,rotation,0.999f);
 			transform.position = position;
-			
 		}
-		
 	}
 	
 	public  float ClampAngle(float angle, float min, float max)

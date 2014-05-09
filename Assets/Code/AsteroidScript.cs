@@ -12,9 +12,9 @@ public  class AsteroidScript :MonoBehaviour {
 
 	public void Start(){
 		hub = GameObject.Find("hub").GetComponent<Hub>();
-
-		rigidbody.mass = (int)transform.localScale.magnitude;
-
+		if (hub.latice.Active) {
+			hub.latice.AddObjectToLatice (this.gameObject);
+		}
 	}
 
 	public void OnDestroy(){

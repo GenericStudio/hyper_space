@@ -3,8 +3,8 @@ using System.Collections;
 
 public class CrateringMesh : MonoBehaviour {
 
-	float radius = .2f;
-	float pull = .2f;
+	float radius = .1f;
+	float pull = .1f;
 	private MeshFilter unappliedMesh ;
 
 	void Start(){
@@ -12,7 +12,7 @@ public class CrateringMesh : MonoBehaviour {
 
 }
 	enum FallOff { Gauss, Linear, Needle }
-	FallOff fallOff = FallOff.Needle;
+	FallOff fallOff = FallOff.Gauss;
 	
 	static float LinearFalloff (float distance  ,float inRadius  ) {
 		return Mathf.Clamp01(1.0f - distance / inRadius);
@@ -85,11 +85,11 @@ public class CrateringMesh : MonoBehaviour {
 	
 	void OnCollisionEnter (Collision col) {
 		for(int i = 0 ; i < col.contacts.Length; i++){
-			if(col.gameObject.name == "bullet"){
+			if(col.gameObject.GetComponent<BulletScript>()!=null){
 				Collider co = col.contacts[i].otherCollider;
 				MeshFilter filter  = GetComponent<MeshFilter>();
 				Vector3 relativePoint = filter.transform.InverseTransformPoint(collider.ClosestPointOnBounds(co.transform.position));
-				filter =  DeformMesh(filter, relativePoint,pull, radius);
+				filter =  DeformMesh(filter, relativePoint,pull, radius*col.gameObject.GetComponent<BulletScript>().damage);
 				ApplyMeshCollider();
 				
 			}
