@@ -1,7 +1,8 @@
 hyper_space
 ===========
 
-hyper_space is an infinite space 3d physics thing in Unity 3d 
+hyper_space is an infinite space 3d physics thing in Unity 3d playable here : [Unity3d Web Demo](http://laticethegame.blogspot.com/)
+
 
 Controls
 --------
